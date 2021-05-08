@@ -338,7 +338,7 @@ private extension BuildService {
         buildOutputPath: AbsolutePath? = nil,
         path: AbsolutePath
     ) throws {
-        try run(
+        try build(
             schemeName: schemeName,
             generate: generate,
             clean: clean,

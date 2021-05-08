@@ -7,14 +7,54 @@ import TuistCore
 import TuistGraph
 import TuistSupport
 
+protocol BuildServicing {
+
+    /// Builds the scheme with given name (or default scheme).
+    ///
+    /// - Parameters:
+    ///   - schemeName: The name of the scheme to run.
+    ///   - generate: Whether to generate the project before running.
+    ///   - clean: Whether to clean the project before running.
+    ///   - configuration: The configuration to use while building & running the project.
+    ///   - buildOutputPath: Path where the build products will be copied to.
+    ///   - path: The path of the project containing the runnable scheme.
+    func build(
+        schemeName: String?,
+        generate: Bool,
+        clean: Bool,
+        configuration: String?,
+        buildOutputPath: AbsolutePath?,
+        path: AbsolutePath
+    ) throws
+
+    /// Builds the scheme (or default scheme).
+    ///
+    /// - Parameters:
+    ///   - schemeName: The name of the scheme to run.
+    ///   - graphTraverser: The graph traverser for getting build information.
+    ///   - clean: Whether to clean the project before running.
+    ///   - configuration: The configuration to use while building the scheme.
+    ///   - buildOutputPath: Path where the build products will be copied to.
+    func buildScheme(
+        scheme: Scheme,
+        graphTraverser: GraphTraversing,
+        workspacePath: AbsolutePath,
+        clean: Bool,
+        configuration: String?,
+        buildOutputPath: AbsolutePath?
+    ) throws
+}
+
 enum BuildServiceError: FatalError {
+    case workspaceNotFound(path: AbsolutePath)
     case schemeNotFound(scheme: String, existing: [String])
     case schemeWithoutBuildableTargets(scheme: String)
     case buildProductsNotFound(path: AbsolutePath)
 
-    // Error description
     var description: String {
         switch self {
+        case let .workspaceNotFound(path):
+            return "Workspace not found expected xcworkspace at \(path.pathString)"
         case let .schemeNotFound(scheme, existing):
             return "Couldn't find scheme \(scheme). The available schemes are: \(existing.joined(separator: ", "))."
         case let .schemeWithoutBuildableTargets(scheme):
@@ -24,12 +64,11 @@ enum BuildServiceError: FatalError {
         }
     }
 
-    // Error type
     var type: ErrorType {
         switch self {
-        case .schemeNotFound:
-            return .abort
-        case .schemeWithoutBuildableTargets:
+        case .workspaceNotFound,
+             .schemeNotFound,
+             .schemeWithoutBuildableTargets:
             return .abort
         case .buildProductsNotFound:
             return .bug
@@ -37,7 +76,7 @@ enum BuildServiceError: FatalError {
     }
 }
 
-final class BuildService {
+final class BuildService: BuildServicing {
     /// Generator
     let generator: Generating
 
@@ -62,7 +101,7 @@ final class BuildService {
         self.buildGraphInspector = buildGraphInspector
     }
 
-    func run(
+    func build(
         schemeName: String?,
         generate: Bool,
         clean: Bool,
@@ -82,7 +121,9 @@ final class BuildService {
 
         logger.log(level: .debug, "Found the following buildable schemes: \(buildableSchemes.map(\.name).joined(separator: ", "))")
 
-        let workspacePath = try buildGraphInspector.workspacePath(directory: path)!
+        guard let workspacePath = try buildGraphInspector.workspacePath(directory: path) else {
+            throw BuildServiceError.workspaceNotFound(path: path)
+        }
 
         if let schemeName = schemeName {
             guard let scheme = buildableSchemes.first(where: { $0.name == schemeName }) else {
@@ -99,7 +140,7 @@ final class BuildService {
             )
         } else {
             var cleaned: Bool = false
-            // Run only buildable entry schemes when specific schemes has not been passed
+            // Build only buildable entry schemes when specific schemes has not been passed
             let buildableEntrySchemes = buildGraphInspector.buildableEntrySchemes(graphTraverser: graphTraverser)
             try buildableEntrySchemes.forEach {
                 try buildScheme(
@@ -119,7 +160,7 @@ final class BuildService {
 
     // MARK: - private
 
-    private func buildScheme(
+    func buildScheme(
         scheme: Scheme,
         graphTraverser: GraphTraversing,
         workspacePath: AbsolutePath,

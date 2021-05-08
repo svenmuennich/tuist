@@ -68,6 +68,14 @@ public final class MockBuildGraphInspector: BuildGraphInspecting {
         testSchemesStub?(graphTraverser) ?? []
     }
 
+    public func runnableTarget(scheme: Scheme, graphTraverser: GraphTraversing) -> (Project, Target)? {
+        nil
+    }
+
+    public func runnableSchemes(graphTraverser: GraphTraversing) -> [Scheme] {
+        []
+    }
+
     public var projectSchemesStub: ((GraphTraversing) -> [Scheme])?
     public func projectSchemes(graphTraverser: GraphTraversing) -> [Scheme] {
         projectSchemesStub?(graphTraverser) ?? []
