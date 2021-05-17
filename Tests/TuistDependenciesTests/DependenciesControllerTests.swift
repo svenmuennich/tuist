@@ -62,10 +62,11 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        carthageInteractor.fetchStub = { arg0, arg1, arg2 in
+        carthageInteractor.installStub = { arg0, arg1, arg2, arg3 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
+            XCTAssertFalse(arg3)
         }
 
         // When
@@ -73,12 +74,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
 
         // Then
         XCTAssertFalse(carthageInteractor.invokedClean)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
-        XCTAssertTrue(carthageInteractor.invokedFetch)
+        XCTAssertTrue(carthageInteractor.invokedInstall)
 
         XCTAssertTrue(swiftPackageManagerInteractor.invokedClean)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
+        XCTAssertFalse(swiftPackageManagerInteractor.invokedInstall)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
         XCTAssertFalse(cocoaPodsInteractor.invokedUpdate)
@@ -104,9 +103,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        swiftPackageManagerInteractor.fetchStub = { arg0, arg1 in
+        swiftPackageManagerInteractor.installStub = { arg0, arg1, arg3 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, swiftPackageManagerDependencies)
+            XCTAssertFalse(arg3)
         }
 
         // When
@@ -114,12 +114,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
 
         // Then
         XCTAssertFalse(swiftPackageManagerInteractor.invokedClean)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
-        XCTAssertTrue(swiftPackageManagerInteractor.invokedFetch)
+        XCTAssertTrue(swiftPackageManagerInteractor.invokedInstall)
 
         XCTAssertTrue(carthageInteractor.invokedClean)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
-        XCTAssertFalse(carthageInteractor.invokedFetch)
+        XCTAssertFalse(carthageInteractor.invokedInstall)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
         XCTAssertFalse(cocoaPodsInteractor.invokedUpdate)
@@ -152,26 +150,26 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        carthageInteractor.fetchStub = { arg0, arg1, arg2 in
+        carthageInteractor.installStub = { arg0, arg1, arg2, arg3 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
+            XCTAssertFalse(arg3)
         }
-        swiftPackageManagerInteractor.fetchStub = { arg0, arg1 in
+        swiftPackageManagerInteractor.installStub = { arg0, arg1, arg2 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, swiftPackageManagerDependencies)
+            XCTAssertFalse(arg2)
         }
 
         // When
         try subject.fetch(at: rootPath, dependencies: dependencies)
 
         // Then
-        XCTAssertTrue(carthageInteractor.invokedFetch)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
+        XCTAssertTrue(carthageInteractor.invokedInstall)
         XCTAssertFalse(carthageInteractor.invokedClean)
 
-        XCTAssertTrue(swiftPackageManagerInteractor.invokedFetch)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
+        XCTAssertTrue(swiftPackageManagerInteractor.invokedInstall)
         XCTAssertFalse(swiftPackageManagerInteractor.invokedClean)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
@@ -209,12 +207,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
         try subject.fetch(at: rootPath, dependencies: dependencies)
 
         // Then
-        XCTAssertFalse(carthageInteractor.invokedFetch)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
+        XCTAssertFalse(carthageInteractor.invokedInstall)
         XCTAssertTrue(carthageInteractor.invokedClean)
 
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
+        XCTAssertFalse(swiftPackageManagerInteractor.invokedInstall)
         XCTAssertTrue(swiftPackageManagerInteractor.invokedClean)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
@@ -244,10 +240,11 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        carthageInteractor.updateStub = { arg0, arg1, arg2 in
+        carthageInteractor.installStub = { arg0, arg1, arg2, arg3 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
+            XCTAssertTrue(arg3)
         }
 
         // When
@@ -255,12 +252,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
 
         // Then
         XCTAssertFalse(carthageInteractor.invokedClean)
-        XCTAssertFalse(carthageInteractor.invokedFetch)
-        XCTAssertTrue(carthageInteractor.invokedUpdate)
+        XCTAssertTrue(carthageInteractor.invokedInstall)
 
         XCTAssertTrue(swiftPackageManagerInteractor.invokedClean)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
+        XCTAssertFalse(swiftPackageManagerInteractor.invokedInstall)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
         XCTAssertFalse(cocoaPodsInteractor.invokedUpdate)
@@ -286,9 +281,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        swiftPackageManagerInteractor.fetchStub = { arg0, arg1 in
+        swiftPackageManagerInteractor.installStub = { arg0, arg1, arg2 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, swiftPackageManagerDependencies)
+            XCTAssertTrue(arg2)
         }
 
         // When
@@ -296,12 +292,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
 
         // Then
         XCTAssertFalse(swiftPackageManagerInteractor.invokedClean)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
-        XCTAssertTrue(swiftPackageManagerInteractor.invokedUpdate)
+        XCTAssertTrue(swiftPackageManagerInteractor.invokedInstall)
 
         XCTAssertTrue(carthageInteractor.invokedClean)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
-        XCTAssertFalse(carthageInteractor.invokedFetch)
+        XCTAssertFalse(carthageInteractor.invokedInstall)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
         XCTAssertFalse(cocoaPodsInteractor.invokedUpdate)
@@ -334,14 +328,16 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             platforms: platforms
         )
 
-        carthageInteractor.updateStub = { arg0, arg1, arg2 in
+        carthageInteractor.installStub = { arg0, arg1, arg2, arg3 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
+            XCTAssertTrue(arg3)
         }
-        swiftPackageManagerInteractor.fetchStub = { arg0, arg1 in
+        swiftPackageManagerInteractor.installStub = { arg0, arg1, arg2 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
             XCTAssertEqual(arg1, swiftPackageManagerDependencies)
+            XCTAssertTrue(arg2)
         }
 
         // When
@@ -349,12 +345,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
 
         // Then
         XCTAssertFalse(carthageInteractor.invokedClean)
-        XCTAssertFalse(carthageInteractor.invokedFetch)
-        XCTAssertTrue(carthageInteractor.invokedUpdate)
+        XCTAssertTrue(carthageInteractor.invokedInstall)
 
         XCTAssertFalse(swiftPackageManagerInteractor.invokedClean)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
-        XCTAssertTrue(swiftPackageManagerInteractor.invokedUpdate)
+        XCTAssertTrue(swiftPackageManagerInteractor.invokedInstall)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
         XCTAssertFalse(cocoaPodsInteractor.invokedUpdate)
@@ -391,12 +385,10 @@ final class DependenciesControllerTests: TuistUnitTestCase {
         try subject.update(at: rootPath, dependencies: dependencies)
 
         // Then
-        XCTAssertFalse(carthageInteractor.invokedFetch)
-        XCTAssertFalse(carthageInteractor.invokedUpdate)
+        XCTAssertFalse(carthageInteractor.invokedInstall)
         XCTAssertTrue(carthageInteractor.invokedClean)
 
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedFetch)
-        XCTAssertFalse(swiftPackageManagerInteractor.invokedUpdate)
+        XCTAssertFalse(swiftPackageManagerInteractor.invokedInstall)
         XCTAssertTrue(swiftPackageManagerInteractor.invokedClean)
 
         XCTAssertFalse(cocoaPodsInteractor.invokedFetch)
