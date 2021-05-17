@@ -67,6 +67,8 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
             XCTAssertFalse(arg3)
+            
+            return .test()
         }
 
         // When
@@ -155,6 +157,8 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
             XCTAssertFalse(arg3)
+            
+            return .test()
         }
         swiftPackageManagerInteractor.installStub = { arg0, arg1, arg2 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
@@ -245,6 +249,8 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
             XCTAssertTrue(arg3)
+            
+            return .test()
         }
 
         // When
@@ -333,6 +339,8 @@ final class DependenciesControllerTests: TuistUnitTestCase {
             XCTAssertEqual(arg1, carthageDependencies)
             XCTAssertEqual(arg2, platforms)
             XCTAssertTrue(arg3)
+            
+            return .test()
         }
         swiftPackageManagerInteractor.installStub = { arg0, arg1, arg2 in
             XCTAssertEqual(arg0, dependenciesDirectoryPath)
