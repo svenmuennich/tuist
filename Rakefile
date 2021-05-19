@@ -28,7 +28,3 @@ def release(version)
     bucket.create_file(version_path, "latest/version").acl.public!
   end
 end
-
-def cli
-  @cli ||= HighLine.new
-end
